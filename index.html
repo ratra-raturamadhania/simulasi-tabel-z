@@ -8,6 +8,18 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .highlight-cell {
+      background-color: #fef08a !important; /* Yellow-200 */
+      font-weight: bold;
+      color: #854d0e;
+      transform: scale(1.05);
+      transition: all 0.2s ease;
+    }
+    .highlight-row, .highlight-col {
+      background-color: #e0e7ff; /* Indigo-100 */
+    }
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
   <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
@@ -28,7 +40,7 @@
         step="0.01" 
         min="-3.00" 
         max="3.00" 
-        value="0.52" 
+        value="-0.64" 
         class="w-32 px-3 py-2 border rounded-lg text-center font-bold text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
       <input 
@@ -37,7 +49,7 @@
         min="-3.00" 
         max="3.00" 
         step="0.01" 
-        value="0.52" 
+        value="-0.64" 
         class="w-full md:w-48 accent-indigo-600 cursor-pointer"
       >
     </div>
@@ -46,11 +58,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
       <div class="p-4 bg-slate-100 rounded-xl">
         <span class="block text-xs uppercase text-slate-400 font-bold">Koordinat Tabel</span>
-        <span id="coordText" class="text-lg font-bold text-slate-700">Baris 0.5 | Kolom .02</span>
+        <span id="coordText" class="text-lg font-bold text-slate-700">Baris -0.6 | Kolom .04</span>
       </div>
       <div class="p-4 bg-indigo-100 rounded-xl">
         <span class="block text-xs uppercase text-indigo-500 font-bold">Probabilitas Area (Kiri)</span>
-        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.69847 (69.85%)</span>
+        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.26109 (26.11%)</span>
       </div>
     </div>
 
@@ -60,9 +72,26 @@
     </div>
 
     <!-- Explanation Box -->
-    <div id="explanation" class="p-4 bg-slate-50 border-l-4 border-indigo-500 rounded text-sm text-slate-600">
-      <!-- Didiisi otomatis via JS -->
+    <div id="explanation" class="p-4 bg-slate-50 border-l-4 border-indigo-500 rounded text-sm text-slate-600 mb-8">
+      <!-- Diisi otomatis via JS -->
     </div>
+
+    <!-- Interactive Z-Table Matrix -->
+    <h2 class="text-xl font-bold text-slate-800 mb-3">Matriks Tabel Z Interaktif</h2>
+    <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-80 overflow-y-auto">
+      <table id="zTable" class="w-full text-xs text-center border-collapse">
+        <thead class="sticky top-0 bg-slate-200 font-bold text-slate-700 z-10">
+          <tr id="tableHead">
+            <th class="p-2 border border-slate-300 bg-slate-300">Z</th>
+            <!-- Kolom .00 s/d .09 di-generate via JS -->
+          </tr>
+        </thead>
+        <tbody id="tableBody" class="divide-y divide-slate-200">
+          <!-- Baris tabel di-generate via JS -->
+        </tbody>
+      </table>
+    </div>
+
   </div>
 
   <script>
@@ -80,6 +109,44 @@
       let area = 1.0 - b * n;
       return z < 0 ? 1.0 - area : area;
     }
+
+    // Generate Matriks Tabel Z
+    const tableHead = document.getElementById('tableHead');
+    const tableBody = document.getElementById('tableBody');
+
+    const cols = ['.00','.01','.02','.03','.04','.05','.06','.07','.08','.09'];
+    cols.forEach(c => {
+      const th = document.createElement('th');
+      th.className = 'p-2 border border-slate-300';
+      th.innerText = c;
+      tableHead.appendChild(th);
+    });
+
+    const rows = [];
+    for (let r = -3.0; r <= 3.0; r += 0.1) {
+      rows.push(parseFloat(r.toFixed(1)));
+    }
+
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.id = `row-${r.toFixed(1)}`;
+      
+      const tdLabel = document.createElement('td');
+      tdLabel.className = 'p-2 border border-slate-300 font-bold bg-slate-100 text-slate-700 sticky left-0';
+      tdLabel.innerText = r.toFixed(1);
+      tr.appendChild(tdLabel);
+
+      cols.forEach((c, cIdx) => {
+        const td = document.createElement('td');
+        const zVal = r < 0 ? (r - cIdx * 0.01) : (r + cIdx * 0.01);
+        const val = gnorm(zVal).toFixed(5);
+        td.className = `p-2 border border-slate-200 cell-${r.toFixed(1)}-${cIdx}`;
+        td.innerText = val;
+        tr.appendChild(td);
+      });
+
+      tableBody.appendChild(tr);
+    });
 
     // Canvas Chart Setup
     const ctx = document.getElementById('zChart').getContext('2d');
@@ -107,7 +174,6 @@
             const zVal = parseFloat(document.getElementById('zInput').value);
             const gradients = context.chart.ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
             
-            // Map zVal (-3.5 s/d 3.5) ke persentase width canvas (0 s/d 1)
             let stopPos = (zVal + 3.5) / 7.0;
             stopPos = Math.max(0, Math.min(1, stopPos));
 
@@ -130,7 +196,7 @@
       }
     });
 
-    // Update Logic
+    // Update Logic & Table Highlight
     function updateApp(val) {
       let z = parseFloat(val);
       if (isNaN(z)) z = 0;
@@ -139,20 +205,34 @@
       const prob = gnorm(z);
       const percent = (prob * 100).toFixed(2);
 
-      // Tangkap koordinat baris & kolom
-      const sign = z < 0 ? "-" : "";
+      // Hitung baris dan kolom
       const absZ = Math.abs(z);
-      const rowVal = (Math.floor(absZ * 10) / 10).toFixed(1);
-      const colVal = (Math.round((absZ - rowVal) * 100) / 100).toFixed(2).replace('0.', '.');
+      const sign = z < 0 ? "-" : "";
+      
+      let rowVal = (Math.floor(absZ * 10) / 10);
+      if (z < 0 && absZ > 0) rowVal = -rowVal;
+      else if (z >= 0) rowVal = rowVal;
 
-      document.getElementById('coordText').innerText = `Baris ${sign}${rowVal}  |  Kolom ${colVal}`;
+      const colIdx = Math.round((absZ - Math.abs(rowVal)) * 100);
+      const colStr = cols[colIdx] || '.00';
+
+      document.getElementById('coordText').innerText = `Baris ${rowVal.toFixed(1)}  |  Kolom ${colStr}`;
       document.getElementById('resultText').innerText = `${prob.toFixed(5)} (${percent}%)`;
       document.getElementById('explanation').innerHTML = `
         <strong>Penjelasan:</strong><br>
-        1. Angka $Z = ${z.toFixed(2)}$ dipecah menjadi baris <b>${sign}${rowVal}</b> dan kolom <b>${colVal}</b>.<br>
+        1. Angka $Z = ${z.toFixed(2)}$ dipecah menjadi baris <b>${rowVal.toFixed(1)}</b> dan kolom <b>${colStr}</b>.<br>
         2. Luas area terarsir di bawah kurva dari ujung kiri hingga titik $Z = ${z.toFixed(2)}$ adalah <b>${prob.toFixed(5)}</b>.<br>
         3. Artinya, sekitar <b>${percent}%</b> data berada di bawah nilai $Z$ ini.
       `;
+
+      // Highlight Table Cell
+      document.querySelectorAll('.highlight-cell').forEach(e => e.classList.remove('highlight-cell'));
+      
+      const targetCell = document.querySelector(`.cell-${rowVal.toFixed(1)}-${colIdx}`);
+      if (targetCell) {
+        targetCell.classList.add('highlight-cell');
+        targetCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      }
 
       chart.update();
     }
@@ -172,7 +252,7 @@
     });
 
     // Initial render
-    updateApp(0.52);
+    updateApp(-0.64);
   </script>
 </body>
 </html>
