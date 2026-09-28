@@ -40,7 +40,7 @@
             step="0.01" 
             min="-3.00" 
             max="3.00" 
-            value="-0.64" 
+            value="1.00" 
             class="w-28 px-3 py-1.5 border rounded-lg text-center font-bold text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
           <input 
@@ -49,7 +49,7 @@
             min="-3.00" 
             max="3.00" 
             step="0.01" 
-            value="-0.64" 
+            value="1.00" 
             class="w-full accent-indigo-600 cursor-pointer"
           >
         </div>
@@ -57,10 +57,10 @@
 
       <!-- Mode Selection -->
       <div class="flex flex-col col-span-2">
-        <label for="modeSelect" class="font-semibold text-slate-700 text-sm mb-1">Pilih Standar Tabel Z:</label>
+        <label for="modeSelect" class="font-semibold text-slate-700 text-sm mb-1">Pilih Jenis Tabel Z:</label>
         <select id="modeSelect" class="w-full p-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="ppt">Mode PPT / Kuliah (Mean-to-Z : Luas dari Garis Tengah Z=0)</option>
-          <option value="leftTail">Mode Modern / Excel (Left-Tail : Kumulatif dari Ujung Kiri)</option>
+          <option value="ppt">Tabel Tengah (Mean to Z / Standard Normal)</option>
+          <option value="leftTail">Tabel Kumulatif Kiri (Left-Tail Cumulative)</option>
         </select>
       </div>
     </div>
@@ -69,11 +69,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
       <div class="p-4 bg-slate-100 rounded-xl">
         <span class="block text-xs uppercase text-slate-400 font-bold">Koordinat Tabel</span>
-        <span id="coordText" class="text-lg font-bold text-slate-700">Baris 0.6 | Kolom .04</span>
+        <span id="coordText" class="text-lg font-bold text-slate-700">Baris 1.0 | Kolom .00</span>
       </div>
       <div class="p-4 bg-indigo-100 rounded-xl">
-        <span id="resultLabel" class="block text-xs uppercase text-indigo-500 font-bold">Luas dari Garis Tengah (Z=0)</span>
-        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.2389 (23.89%)</span>
+        <span id="resultLabel" class="block text-xs uppercase text-indigo-500 font-bold">Luas dari Garis Tengah (Z=0 ke Z)</span>
+        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.3413 (34.13%)</span>
       </div>
     </div>
 
@@ -88,8 +88,8 @@
     </div>
 
     <!-- Interactive Z-Table Matrix -->
-    <h2 id="tableTitle" class="text-xl font-bold text-slate-800 mb-1">Matriks Tabel Z Interaktif</h2>
-    <p id="tableDesc" class="text-xs text-slate-400 mb-3"></p>
+    <h2 id="tableTitle" class="text-xl font-bold text-slate-800 mb-1">Matriks Tabel Z (Mean-to-Z)</h2>
+    <p id="tableDesc" class="text-xs text-slate-400 mb-3">*Mengukur luas area dari titik tengah (Z = 0) ke nilai Z positif.</p>
     <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-80 overflow-y-auto">
       <table id="zTable" class="w-full text-xs text-center border-collapse">
         <thead class="sticky top-0 bg-slate-200 font-bold text-slate-700 z-10">
@@ -146,12 +146,12 @@
       const rows = [];
       
       if (mode === 'ppt') {
-        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Standar PPT / Mean-to-Z)";
-        document.getElementById('tableDesc').innerText = "*Mengukur luas area dari Garis Tengah (Z = 0) ke titik Z positif.";
+        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Mean-to-Z)";
+        document.getElementById('tableDesc').innerText = "*Mengukur luas area dari titik tengah (Z = 0) ke nilai Z positif.";
         for (let r = 0.0; r <= 3.0; r += 0.1) rows.push(parseFloat(r.toFixed(1)));
       } else {
-        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Standar Modern / Left-Tail)";
-        document.getElementById('tableDesc').innerText = "*Mengukur luas area kumulatif dari Ujung Kiri paling luar hingga titik Z.";
+        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Left-Tail Cumulative)";
+        document.getElementById('tableDesc').innerText = "*Mengukur luas area kumulatif dari ekor kiri paling ujung hingga titik Z.";
         for (let r = -3.0; r <= 3.0; r += 0.1) rows.push(parseFloat(r.toFixed(1)));
       }
 
@@ -267,10 +267,10 @@
         document.getElementById('resultText').innerText = `${meanToZVal.toFixed(4)} (${(meanToZVal * 100).toFixed(2)}%)`;
         
         document.getElementById('explanation').innerHTML = `
-          <strong>Penjelasan Cara PPT (Mean-to-Z):</strong><br>
-          1. Nilai Z = <b>${z.toFixed(2)}</b> (diabaikan tanda minusnya) dipecah jadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
-          2. Nilai dari Tabel PPT (luas dari Z=0 ke Z=${z.toFixed(2)}): <b>${meanToZVal.toFixed(4)}</b> (${(meanToZVal * 100).toFixed(2)}%).<br>
-          3. Sisa area di ujung luar (Ekor): <b>0.5 - ${meanToZVal.toFixed(4)} = ${tailVal.toFixed(4)}</b> (${(tailVal * 100).toFixed(2)}%).<br>
+          <strong>Langkah Perhitungan (Mean-to-Z):</strong><br>
+          1. Nilai Z = <b>${z.toFixed(2)}</b> (diabaikan tanda minusnya) dipecah menjadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
+          2. Nilai dari Tabel (luas dari Z=0 ke Z=${z.toFixed(2)}): <b>${meanToZVal.toFixed(4)}</b> (${(meanToZVal * 100).toFixed(2)}%).<br>
+          3. Sisa area di ujung ekor: <b>0.5 - ${meanToZVal.toFixed(4)} = ${tailVal.toFixed(4)}</b> (${(tailVal * 100).toFixed(2)}%).<br>
           4. Total area kumulatif dari ujung kiri: <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).
         `;
       } else {
@@ -283,9 +283,9 @@
         document.getElementById('resultText').innerText = `${leftTailVal.toFixed(4)} (${(leftTailVal * 100).toFixed(2)}%)`;
 
         document.getElementById('explanation').innerHTML = `
-          <strong>Penjelasan Cara Modern (Left-Tail):</strong><br>
-          1. Nilai Z = <b>${z.toFixed(2)}</b> dipecah jadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
-          2. Nilai Tabel Kumulatif (luas dari ujung paling kiri ke Z=${z.toFixed(2)}): <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).<br>
+          <strong>Langkah Perhitungan (Left-Tail):</strong><br>
+          1. Nilai Z = <b>${z.toFixed(2)}</b> dipecah menjadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
+          2. Nilai Tabel Kumulatif (luas dari ekor kiri paling ujung ke Z=${z.toFixed(2)}): <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).<br>
           3. Sisa area di sebelah kanan titik Z: <b>1.0 - ${leftTailVal.toFixed(4)} = ${(1 - leftTailVal).toFixed(4)}</b> (${((1 - leftTailVal) * 100).toFixed(2)}%).
         `;
       }
