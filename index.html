@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulasi & Visualisasi Tabel Z</title>
+  <title>Simulasi & Visualisasi Tabel Z Interaktif</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -16,9 +16,6 @@
       transform: scale(1.05);
       transition: all 0.2s ease;
     }
-    .highlight-row, .highlight-col {
-      background-color: #e0e7ff; /* Indigo-100 */
-    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
@@ -28,41 +25,55 @@
       Simulasi & Visualisasi Tabel Z
     </h1>
     <p class="text-center text-slate-500 mb-6 text-sm">
-      Pelajari cara membaca Skor-Z dan area distribusinya secara interaktif.
+      Alat bantu interaktif untuk memahami pembacaan Tabel Z, kurva normal baku, dan perhitungan probabilitas.
     </p>
 
-    <!-- Input Section -->
-    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-6 bg-indigo-50 p-4 rounded-xl">
-      <label for="zInput" class="font-semibold text-slate-700">Masukkan Nilai Z (-3.00 s/d 3.00):</label>
-      <input 
-        type="number" 
-        id="zInput" 
-        step="0.01" 
-        min="-3.00" 
-        max="3.00" 
-        value="-0.64" 
-        class="w-32 px-3 py-2 border rounded-lg text-center font-bold text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      >
-      <input 
-        type="range" 
-        id="zSlider" 
-        min="-3.00" 
-        max="3.00" 
-        step="0.01" 
-        value="-0.64" 
-        class="w-full md:w-48 accent-indigo-600 cursor-pointer"
-      >
+    <!-- Control Panel -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-indigo-50 p-4 rounded-xl items-center">
+      <!-- Input Z -->
+      <div class="flex flex-col">
+        <label for="zInput" class="font-semibold text-slate-700 text-sm mb-1">Nilai Z (-3.00 s/d 3.00):</label>
+        <div class="flex items-center gap-2">
+          <input 
+            type="number" 
+            id="zInput" 
+            step="0.01" 
+            min="-3.00" 
+            max="3.00" 
+            value="-0.64" 
+            class="w-28 px-3 py-1.5 border rounded-lg text-center font-bold text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+          <input 
+            type="range" 
+            id="zSlider" 
+            min="-3.00" 
+            max="3.00" 
+            step="0.01" 
+            value="-0.64" 
+            class="w-full accent-indigo-600 cursor-pointer"
+          >
+        </div>
+      </div>
+
+      <!-- Mode Selection -->
+      <div class="flex flex-col col-span-2">
+        <label for="modeSelect" class="font-semibold text-slate-700 text-sm mb-1">Pilih Standar Tabel Z:</label>
+        <select id="modeSelect" class="w-full p-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="ppt">Mode PPT / Kuliah (Mean-to-Z : Luas dari Garis Tengah Z=0)</option>
+          <option value="leftTail">Mode Modern / Excel (Left-Tail : Kumulatif dari Ujung Kiri)</option>
+        </select>
+      </div>
     </div>
 
     <!-- Output Info -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
       <div class="p-4 bg-slate-100 rounded-xl">
         <span class="block text-xs uppercase text-slate-400 font-bold">Koordinat Tabel</span>
-        <span id="coordText" class="text-lg font-bold text-slate-700">Baris -0.6 | Kolom .04</span>
+        <span id="coordText" class="text-lg font-bold text-slate-700">Baris 0.6 | Kolom .04</span>
       </div>
       <div class="p-4 bg-indigo-100 rounded-xl">
-        <span class="block text-xs uppercase text-indigo-500 font-bold">Probabilitas Area (Kiri)</span>
-        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.26109 (26.11%)</span>
+        <span id="resultLabel" class="block text-xs uppercase text-indigo-500 font-bold">Luas dari Garis Tengah (Z=0)</span>
+        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.2389 (23.89%)</span>
       </div>
     </div>
 
@@ -77,13 +88,13 @@
     </div>
 
     <!-- Interactive Z-Table Matrix -->
-    <h2 class="text-xl font-bold text-slate-800 mb-3">Matriks Tabel Z Interaktif</h2>
+    <h2 id="tableTitle" class="text-xl font-bold text-slate-800 mb-1">Matriks Tabel Z Interaktif</h2>
+    <p id="tableDesc" class="text-xs text-slate-400 mb-3"></p>
     <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-80 overflow-y-auto">
       <table id="zTable" class="w-full text-xs text-center border-collapse">
         <thead class="sticky top-0 bg-slate-200 font-bold text-slate-700 z-10">
           <tr id="tableHead">
             <th class="p-2 border border-slate-300 bg-slate-300">Z</th>
-            <!-- Kolom .00 s/d .09 di-generate via JS -->
           </tr>
         </thead>
         <tbody id="tableBody" class="divide-y divide-slate-200">
@@ -95,60 +106,84 @@
   </div>
 
   <script>
-    // Rumus aproksimasi Cumulative Distribution Function (CDF)
-    function gnorm(z) {
-      if (z < -6) return 0;
-      if (z > 6) return 1;
-      let b1 = 0.319381530, b2 = -0.356563782, b3 = 1.781477937, b4 = -1.821255978, b5 = 1.330274429;
-      let p = 0.2316419;
-      let c2 = 0.39894228;
-      let a = Math.abs(z);
-      let t = 1.0 / (1.0 + a * p);
-      let b = c2 * Math.exp((-z * z) / 2.0);
-      let n = ((((b5 * t + b4) * t + b3) * t + b2) * t + b1) * t;
-      let area = 1.0 - b * n;
-      return z < 0 ? 1.0 - area : area;
+    // Rumus aproksimasi Error Function (erf)
+    function erf(x) {
+      let a1 =  0.254829592, a2 = -0.284496736, a3 =  1.421413741;
+      let a4 = -1.453152027, a5 =  1.061405429, p  =  0.3275911;
+      let sign = (x < 0) ? -1 : 1;
+      x = Math.abs(x);
+      let t = 1.0 / (1.0 + p * x);
+      let y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+      return sign * y;
     }
 
-    // Generate Matriks Tabel Z
-    const tableHead = document.getElementById('tableHead');
-    const tableBody = document.getElementById('tableBody');
+    // Luas Kumulatif Kiri (CDF)
+    function getLeftTail(z) {
+      return 0.5 * (1 + erf(z / Math.sqrt(2)));
+    }
+
+    // Luas dari Tengah (Mean-to-Z)
+    function getMeanToZ(z) {
+      return 0.5 * erf(Math.abs(z) / Math.sqrt(2));
+    }
 
     const cols = ['.00','.01','.02','.03','.04','.05','.06','.07','.08','.09'];
-    cols.forEach(c => {
-      const th = document.createElement('th');
-      th.className = 'p-2 border border-slate-300';
-      th.innerText = c;
-      tableHead.appendChild(th);
-    });
 
-    const rows = [];
-    for (let r = -3.0; r <= 3.0; r += 0.1) {
-      rows.push(parseFloat(r.toFixed(1)));
-    }
-
-    rows.forEach(r => {
-      const tr = document.createElement('tr');
-      tr.id = `row-${r.toFixed(1)}`;
+    // Function to render table matrix based on mode
+    function buildTable(mode) {
+      const tableHead = document.getElementById('tableHead');
+      const tableBody = document.getElementById('tableBody');
       
-      const tdLabel = document.createElement('td');
-      tdLabel.className = 'p-2 border border-slate-300 font-bold bg-slate-100 text-slate-700 sticky left-0';
-      tdLabel.innerText = r.toFixed(1);
-      tr.appendChild(tdLabel);
-
-      cols.forEach((c, cIdx) => {
-        const td = document.createElement('td');
-        const zVal = r < 0 ? (r - cIdx * 0.01) : (r + cIdx * 0.01);
-        const val = gnorm(zVal).toFixed(5);
-        td.className = `p-2 border border-slate-200 cell-${r.toFixed(1)}-${cIdx}`;
-        td.innerText = val;
-        tr.appendChild(td);
+      tableHead.innerHTML = '<th class="p-2 border border-slate-300 bg-slate-300">Z</th>';
+      cols.forEach(c => {
+        const th = document.createElement('th');
+        th.className = 'p-2 border border-slate-300';
+        th.innerText = c;
+        tableHead.appendChild(th);
       });
 
-      tableBody.appendChild(tr);
-    });
+      tableBody.innerHTML = '';
+      const rows = [];
+      
+      if (mode === 'ppt') {
+        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Standar PPT / Mean-to-Z)";
+        document.getElementById('tableDesc').innerText = "*Mengukur luas area dari Garis Tengah (Z = 0) ke titik Z positif.";
+        for (let r = 0.0; r <= 3.0; r += 0.1) rows.push(parseFloat(r.toFixed(1)));
+      } else {
+        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Standar Modern / Left-Tail)";
+        document.getElementById('tableDesc').innerText = "*Mengukur luas area kumulatif dari Ujung Kiri paling luar hingga titik Z.";
+        for (let r = -3.0; r <= 3.0; r += 0.1) rows.push(parseFloat(r.toFixed(1)));
+      }
 
-    // Canvas Chart Setup
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.id = `row-${r.toFixed(1)}`;
+        
+        const tdLabel = document.createElement('td');
+        tdLabel.className = 'p-2 border border-slate-300 font-bold bg-slate-100 text-slate-700 sticky left-0';
+        tdLabel.innerText = r.toFixed(1);
+        tr.appendChild(tdLabel);
+
+        cols.forEach((c, cIdx) => {
+          const td = document.createElement('td');
+          let val = 0;
+          if (mode === 'ppt') {
+            const zVal = r + cIdx * 0.01;
+            val = getMeanToZ(zVal).toFixed(4);
+          } else {
+            const zVal = r < 0 ? (r - cIdx * 0.01) : (r + cIdx * 0.01);
+            val = getLeftTail(zVal).toFixed(4);
+          }
+          td.className = `p-2 border border-slate-200 cell-${r.toFixed(1)}-${cIdx}`;
+          td.innerText = val;
+          tr.appendChild(td);
+        });
+
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Chart Setup
     const ctx = document.getElementById('zChart').getContext('2d');
     const labels = [];
     const dataPoints = [];
@@ -172,15 +207,28 @@
             const chartArea = context.chart.chartArea;
             if (!chartArea) return null;
             const zVal = parseFloat(document.getElementById('zInput').value);
+            const mode = document.getElementById('modeSelect').value;
             const gradients = context.chart.ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
             
-            let stopPos = (zVal + 3.5) / 7.0;
-            stopPos = Math.max(0, Math.min(1, stopPos));
+            let stopPos = Math.max(0, Math.min(1, (zVal + 3.5) / 7.0));
 
-            gradients.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
-            gradients.addColorStop(stopPos, 'rgba(79, 70, 229, 0.4)');
-            gradients.addColorStop(stopPos, 'rgba(226, 232, 240, 0.2)');
-            gradients.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
+            if (mode === 'ppt') {
+              let stopCenter = 0.5;
+              let start = Math.min(stopCenter, stopPos);
+              let end = Math.max(stopCenter, stopPos);
+
+              gradients.addColorStop(0, 'rgba(226, 232, 240, 0.2)');
+              gradients.addColorStop(start, 'rgba(226, 232, 240, 0.2)');
+              gradients.addColorStop(start, 'rgba(79, 70, 229, 0.4)');
+              gradients.addColorStop(end, 'rgba(79, 70, 229, 0.4)');
+              gradients.addColorStop(end, 'rgba(226, 232, 240, 0.2)');
+              gradients.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
+            } else {
+              gradients.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+              gradients.addColorStop(stopPos, 'rgba(79, 70, 229, 0.4)');
+              gradients.addColorStop(stopPos, 'rgba(226, 232, 240, 0.2)');
+              gradients.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
+            }
             return gradients;
           }
         }]
@@ -196,38 +244,56 @@
       }
     });
 
-    // Update Logic & Table Highlight
-    function updateApp(val) {
-      let z = parseFloat(val);
+    // Main Update Function
+    function updateApp() {
+      let z = parseFloat(document.getElementById('zInput').value);
       if (isNaN(z)) z = 0;
       z = Math.min(3, Math.max(-3, z));
+      const mode = document.getElementById('modeSelect').value;
 
-      const prob = gnorm(z);
-      const percent = (prob * 100).toFixed(2);
-
-      // Hitung baris dan kolom
       const absZ = Math.abs(z);
-      const sign = z < 0 ? "-" : "";
-      
-      let rowVal = (Math.floor(absZ * 10) / 10);
-      if (z < 0 && absZ > 0) rowVal = -rowVal;
-      else if (z >= 0) rowVal = rowVal;
+      const meanToZVal = getMeanToZ(absZ);
+      const leftTailVal = getLeftTail(z);
+      const tailVal = 0.5 - meanToZVal;
 
-      const colIdx = Math.round((absZ - Math.abs(rowVal)) * 100);
-      const colStr = cols[colIdx] || '.00';
+      let rowVal, colIdx, colStr;
+
+      if (mode === 'ppt') {
+        rowVal = Math.floor(absZ * 10) / 10;
+        colIdx = Math.round((absZ - rowVal) * 100);
+        colStr = cols[colIdx] || '.00';
+
+        document.getElementById('resultLabel').innerText = "Luas dari Garis Tengah (Z=0 ke Z)";
+        document.getElementById('resultText').innerText = `${meanToZVal.toFixed(4)} (${(meanToZVal * 100).toFixed(2)}%)`;
+        
+        document.getElementById('explanation').innerHTML = `
+          <strong>Penjelasan Cara PPT (Mean-to-Z):</strong><br>
+          1. Nilai Z = <b>${z.toFixed(2)}</b> (diabaikan tanda minusnya) dipecah jadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
+          2. Nilai dari Tabel PPT (luas dari Z=0 ke Z=${z.toFixed(2)}): <b>${meanToZVal.toFixed(4)}</b> (${(meanToZVal * 100).toFixed(2)}%).<br>
+          3. Sisa area di ujung luar (Ekor): <b>0.5 - ${meanToZVal.toFixed(4)} = ${tailVal.toFixed(4)}</b> (${(tailVal * 100).toFixed(2)}%).<br>
+          4. Total area kumulatif dari ujung kiri: <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).
+        `;
+      } else {
+        rowVal = Math.floor(absZ * 10) / 10;
+        if (z < 0 && absZ > 0) rowVal = -rowVal;
+        colIdx = Math.round((absZ - Math.abs(rowVal)) * 100);
+        colStr = cols[colIdx] || '.00';
+
+        document.getElementById('resultLabel').innerText = "Luas Kumulatif (Ujung Kiri ke Z)";
+        document.getElementById('resultText').innerText = `${leftTailVal.toFixed(4)} (${(leftTailVal * 100).toFixed(2)}%)`;
+
+        document.getElementById('explanation').innerHTML = `
+          <strong>Penjelasan Cara Modern (Left-Tail):</strong><br>
+          1. Nilai Z = <b>${z.toFixed(2)}</b> dipecah jadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
+          2. Nilai Tabel Kumulatif (luas dari ujung paling kiri ke Z=${z.toFixed(2)}): <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).<br>
+          3. Sisa area di sebelah kanan titik Z: <b>1.0 - ${leftTailVal.toFixed(4)} = ${(1 - leftTailVal).toFixed(4)}</b> (${((1 - leftTailVal) * 100).toFixed(2)}%).
+        `;
+      }
 
       document.getElementById('coordText').innerText = `Baris ${rowVal.toFixed(1)}  |  Kolom ${colStr}`;
-      document.getElementById('resultText').innerText = `${prob.toFixed(5)} (${percent}%)`;
-      document.getElementById('explanation').innerHTML = `
-        <strong>Penjelasan:</strong><br>
-        1. Angka Z = ${z.toFixed(2)} dipecah menjadi baris <b>${rowVal.toFixed(1)}</b> dan kolom <b>${colStr}</b>.<br>
-        2. Luas area terarsir di bawah kurva dari ujung kiri hingga titik Z = ${z.toFixed(2)} adalah <b>${prob.toFixed(5)}</b>.<br>
-        3. Artinya, sekitar <b>${percent}%</b> data berada di bawah nilai Z ini.
-      `;
 
-      // Highlight Table Cell
+      // Highlight cell
       document.querySelectorAll('.highlight-cell').forEach(e => e.classList.remove('highlight-cell'));
-      
       const targetCell = document.querySelector(`.cell-${rowVal.toFixed(1)}-${colIdx}`);
       if (targetCell) {
         targetCell.classList.add('highlight-cell');
@@ -240,19 +306,26 @@
     // Event Listeners
     const zInput = document.getElementById('zInput');
     const zSlider = document.getElementById('zSlider');
+    const modeSelect = document.getElementById('modeSelect');
 
     zInput.addEventListener('input', (e) => {
       zSlider.value = e.target.value;
-      updateApp(e.target.value);
+      updateApp();
     });
 
     zSlider.addEventListener('input', (e) => {
       zInput.value = e.target.value;
-      updateApp(e.target.value);
+      updateApp();
     });
 
-    // Initial render
-    updateApp(-0.64);
+    modeSelect.addEventListener('change', () => {
+      buildTable(modeSelect.value);
+      updateApp();
+    });
+
+    // Init
+    buildTable('ppt');
+    updateApp();
   </script>
 </body>
 </html>
