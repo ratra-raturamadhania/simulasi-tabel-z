@@ -129,7 +129,7 @@
 
     const cols = ['.00','.01','.02','.03','.04','.05','.06','.07','.08','.09'];
 
-    // Function to render table matrix based on mode
+    // Render matriks tabel Z berdasarkan mode pilihan
     function buildTable(mode) {
       const tableHead = document.getElementById('tableHead');
       const tableBody = document.getElementById('tableBody');
@@ -183,7 +183,7 @@
       });
     }
 
-    // Chart Setup
+    // Setup Awal Chart Canvas
     const ctx = document.getElementById('zChart').getContext('2d');
     const labels = [];
     const dataPoints = [];
@@ -203,34 +203,7 @@
           borderColor: '#4f46e5',
           pointRadius: 0,
           fill: true,
-          backgroundColor: (context) => {
-            const chartArea = context.chart.chartArea;
-            if (!chartArea) return null;
-            const zVal = parseFloat(document.getElementById('zInput').value);
-            const mode = document.getElementById('modeSelect').value;
-            const gradients = context.chart.ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-            
-            let stopPos = Math.max(0, Math.min(1, (zVal + 3.5) / 7.0));
-
-            if (mode === 'ppt') {
-              let stopCenter = 0.5;
-              let start = Math.min(stopCenter, stopPos);
-              let end = Math.max(stopCenter, stopPos);
-
-              gradients.addColorStop(0, 'rgba(226, 232, 240, 0.2)');
-              gradients.addColorStop(start, 'rgba(226, 232, 240, 0.2)');
-              gradients.addColorStop(start, 'rgba(79, 70, 229, 0.4)');
-              gradients.addColorStop(end, 'rgba(79, 70, 229, 0.4)');
-              gradients.addColorStop(end, 'rgba(226, 232, 240, 0.2)');
-              gradients.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
-            } else {
-              gradients.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
-              gradients.addColorStop(stopPos, 'rgba(79, 70, 229, 0.4)');
-              gradients.addColorStop(stopPos, 'rgba(226, 232, 240, 0.2)');
-              gradients.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
-            }
-            return gradients;
-          }
+          backgroundColor: 'rgba(79, 70, 229, 0.4)'
         }]
       },
       options: {
@@ -243,6 +216,37 @@
         }
       }
     });
+
+    // Update Gradient Arsiran Kurva secara Dinamis
+    function updateChartGradient(zVal, mode) {
+      const chartArea = chart.chartArea;
+      if (!chartArea) return;
+
+      const ctx = chart.ctx;
+      const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+      let stopPos = Math.max(0, Math.min(1, (zVal + 3.5) / 7.0));
+
+      if (mode === 'ppt') {
+        let stopCenter = 0.5;
+        let start = Math.min(stopCenter, stopPos);
+        let end = Math.max(stopCenter, stopPos);
+
+        gradient.addColorStop(0, 'rgba(226, 232, 240, 0.2)');
+        gradient.addColorStop(start, 'rgba(226, 232, 240, 0.2)');
+        gradient.addColorStop(start, 'rgba(79, 70, 229, 0.4)');
+        gradient.addColorStop(end, 'rgba(79, 70, 229, 0.4)');
+        gradient.addColorStop(end, 'rgba(226, 232, 240, 0.2)');
+        gradient.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
+      } else {
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+        gradient.addColorStop(stopPos, 'rgba(79, 70, 229, 0.4)');
+        gradient.addColorStop(stopPos, 'rgba(226, 232, 240, 0.2)');
+        gradient.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
+      }
+
+      chart.data.datasets[0].backgroundColor = gradient;
+      chart.update();
+    }
 
     // Main Update Function
     function updateApp() {
@@ -292,7 +296,7 @@
 
       document.getElementById('coordText').innerText = `Baris ${rowVal.toFixed(1)}  |  Kolom ${colStr}`;
 
-      // Highlight cell
+      // Highlight cell tabel
       document.querySelectorAll('.highlight-cell').forEach(e => e.classList.remove('highlight-cell'));
       const targetCell = document.querySelector(`.cell-${rowVal.toFixed(1)}-${colIdx}`);
       if (targetCell) {
@@ -300,7 +304,8 @@
         targetCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
       }
 
-      chart.update();
+      // Render ulang gradient kurva
+      updateChartGradient(z, mode);
     }
 
     // Event Listeners
@@ -323,7 +328,7 @@
       updateApp();
     });
 
-    // Init
+    // Inisialisasi awal
     buildTable('ppt');
     updateApp();
   </script>
