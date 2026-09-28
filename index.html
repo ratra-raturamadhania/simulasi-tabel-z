@@ -1,336 +1,40 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulasi & Visualisasi Tabel Z Interaktif</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    .highlight-cell {
-      background-color: #fef08a !important; /* Yellow-200 */
-      font-weight: bold;
-      color: #854d0e;
-      transform: scale(1.05);
-      transition: all 0.2s ease;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biostatistics Hub & Calculator</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
-    
-    <h1 class="text-2xl md:text-3xl font-bold text-center text-indigo-600 mb-2">
-      Simulasi & Visualisasi Tabel Z
-    </h1>
-    <p class="text-center text-slate-500 mb-6 text-sm">
-      Alat bantu interaktif untuk memahami pembacaan Tabel Z, kurva normal baku, dan perhitungan probabilitas.
-    </p>
+<body>
+    <header>
+        <h1>Biostatistics Hub</h1>
+        <p>Platform Edukasi & Kalkulator Biostatistik Interaktif</p>
+    </header>
 
-    <!-- Control Panel -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-indigo-50 p-4 rounded-xl items-center">
-      <!-- Input Z -->
-      <div class="flex flex-col">
-        <label for="zInput" class="font-semibold text-slate-700 text-sm mb-1">Nilai Z (-3.00 s/d 3.00):</label>
-        <div class="flex items-center gap-2">
-          <input 
-            type="number" 
-            id="zInput" 
-            step="0.01" 
-            min="-3.00" 
-            max="3.00" 
-            value="1.00" 
-            class="w-28 px-3 py-1.5 border rounded-lg text-center font-bold text-base focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-          <input 
-            type="range" 
-            id="zSlider" 
-            min="-3.00" 
-            max="3.00" 
-            step="0.01" 
-            value="1.00" 
-            class="w-full accent-indigo-600 cursor-pointer"
-          >
-        </div>
-      </div>
+    <main class="container">
+        <!-- Section Kalkulator Deskriptif -->
+        <section class="card">
+            <h2>Kalkulator Statistik Deskriptif</h2>
+            <p>Masukkan sekumpulan angka (pisahkan dengan koma atau spasi):</p>
+            
+            <textarea id="dataInput" placeholder="Contoh: 12, 15, 18, 20, 22, 25, 28"></textarea>
+            <button onclick="calculateDescriptive()">Hitung Statistik</button>
 
-      <!-- Mode Selection -->
-      <div class="flex flex-col col-span-2">
-        <label for="modeSelect" class="font-semibold text-slate-700 text-sm mb-1">Pilih Jenis Tabel Z:</label>
-        <select id="modeSelect" class="w-full p-2 bg-white border border-slate-300 rounded-lg text-sm font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="ppt">Tabel Tengah (Mean to Z / Standard Normal)</option>
-          <option value="leftTail">Tabel Kumulatif Kiri (Left-Tail Cumulative)</option>
-        </select>
-      </div>
-    </div>
+            <div id="result" class="result-box" style="display: none;">
+                <h3>Hasil Perhitungan:</h3>
+                <ul>
+                    <li><strong>Jumlah Data (N):</strong> <span id="outN">-</span></li>
+                    <li><strong>Mean (Rata-rata):</strong> <span id="outMean">-</span></li>
+                    <li><strong>Median:</strong> <span id="outMedian">-</span></li>
+                    <li><strong>Standar Deviasi (Sample):</strong> <span id="outSD">-</span></li>
+                    <li><strong>Nilai Minimum:</strong> <span id="outMin">-</span></li>
+                    <li><strong>Nilai Maksimum:</strong> <span id="outMax">-</span></li>
+                </ul>
+            </div>
+        </section>
+    </main>
 
-    <!-- Output Info -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-center">
-      <div class="p-4 bg-slate-100 rounded-xl">
-        <span class="block text-xs uppercase text-slate-400 font-bold">Koordinat Tabel</span>
-        <span id="coordText" class="text-lg font-bold text-slate-700">Baris 1.0 | Kolom .00</span>
-      </div>
-      <div class="p-4 bg-indigo-100 rounded-xl">
-        <span id="resultLabel" class="block text-xs uppercase text-indigo-500 font-bold">Luas dari Garis Tengah (Z=0 ke Z)</span>
-        <span id="resultText" class="text-xl font-extrabold text-indigo-700">0.3413 (34.13%)</span>
-      </div>
-    </div>
-
-    <!-- Chart Canvas -->
-    <div class="mb-6 h-64">
-      <canvas id="zChart"></canvas>
-    </div>
-
-    <!-- Explanation Box -->
-    <div id="explanation" class="p-4 bg-slate-50 border-l-4 border-indigo-500 rounded text-sm text-slate-600 mb-8">
-      <!-- Diisi otomatis via JS -->
-    </div>
-
-    <!-- Interactive Z-Table Matrix -->
-    <h2 id="tableTitle" class="text-xl font-bold text-slate-800 mb-1">Matriks Tabel Z (Mean-to-Z)</h2>
-    <p id="tableDesc" class="text-xs text-slate-400 mb-3">*Mengukur luas area dari titik tengah (Z = 0) ke nilai Z positif.</p>
-    <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-80 overflow-y-auto">
-      <table id="zTable" class="w-full text-xs text-center border-collapse">
-        <thead class="sticky top-0 bg-slate-200 font-bold text-slate-700 z-10">
-          <tr id="tableHead">
-            <th class="p-2 border border-slate-300 bg-slate-300">Z</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody" class="divide-y divide-slate-200">
-          <!-- Baris tabel di-generate via JS -->
-        </tbody>
-      </table>
-    </div>
-
-  </div>
-
-  <script>
-    // Rumus aproksimasi Error Function (erf)
-    function erf(x) {
-      let a1 =  0.254829592, a2 = -0.284496736, a3 =  1.421413741;
-      let a4 = -1.453152027, a5 =  1.061405429, p  =  0.3275911;
-      let sign = (x < 0) ? -1 : 1;
-      x = Math.abs(x);
-      let t = 1.0 / (1.0 + p * x);
-      let y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
-      return sign * y;
-    }
-
-    // Luas Kumulatif Kiri (CDF)
-    function getLeftTail(z) {
-      return 0.5 * (1 + erf(z / Math.sqrt(2)));
-    }
-
-    // Luas dari Tengah (Mean-to-Z)
-    function getMeanToZ(z) {
-      return 0.5 * erf(Math.abs(z) / Math.sqrt(2));
-    }
-
-    const cols = ['.00','.01','.02','.03','.04','.05','.06','.07','.08','.09'];
-
-    // Render matriks tabel Z berdasarkan mode pilihan
-    function buildTable(mode) {
-      const tableHead = document.getElementById('tableHead');
-      const tableBody = document.getElementById('tableBody');
-      
-      tableHead.innerHTML = '<th class="p-2 border border-slate-300 bg-slate-300">Z</th>';
-      cols.forEach(c => {
-        const th = document.createElement('th');
-        th.className = 'p-2 border border-slate-300';
-        th.innerText = c;
-        tableHead.appendChild(th);
-      });
-
-      tableBody.innerHTML = '';
-      const rows = [];
-      
-      if (mode === 'ppt') {
-        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Mean-to-Z)";
-        document.getElementById('tableDesc').innerText = "*Mengukur luas area dari titik tengah (Z = 0) ke nilai Z positif.";
-        for (let r = 0.0; r <= 3.0; r += 0.1) rows.push(parseFloat(r.toFixed(1)));
-      } else {
-        document.getElementById('tableTitle').innerText = "Matriks Tabel Z (Left-Tail Cumulative)";
-        document.getElementById('tableDesc').innerText = "*Mengukur luas area kumulatif dari ekor kiri paling ujung hingga titik Z.";
-        for (let r = -3.0; r <= 3.0; r += 0.1) rows.push(parseFloat(r.toFixed(1)));
-      }
-
-      rows.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.id = `row-${r.toFixed(1)}`;
-        
-        const tdLabel = document.createElement('td');
-        tdLabel.className = 'p-2 border border-slate-300 font-bold bg-slate-100 text-slate-700 sticky left-0';
-        tdLabel.innerText = r.toFixed(1);
-        tr.appendChild(tdLabel);
-
-        cols.forEach((c, cIdx) => {
-          const td = document.createElement('td');
-          let val = 0;
-          if (mode === 'ppt') {
-            const zVal = r + cIdx * 0.01;
-            val = getMeanToZ(zVal).toFixed(4);
-          } else {
-            const zVal = r < 0 ? (r - cIdx * 0.01) : (r + cIdx * 0.01);
-            val = getLeftTail(zVal).toFixed(4);
-          }
-          td.className = `p-2 border border-slate-200 cell-${r.toFixed(1)}-${cIdx}`;
-          td.innerText = val;
-          tr.appendChild(td);
-        });
-
-        tableBody.appendChild(tr);
-      });
-    }
-
-    // Setup Awal Chart Canvas
-    const ctx = document.getElementById('zChart').getContext('2d');
-    const labels = [];
-    const dataPoints = [];
-    for (let x = -3.5; x <= 3.5; x += 0.05) {
-      labels.push(x.toFixed(2));
-      dataPoints.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x));
-    }
-
-    let chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Kurva Normal Standar',
-          data: dataPoints,
-          borderWidth: 2,
-          borderColor: '#4f46e5',
-          pointRadius: 0,
-          fill: true,
-          backgroundColor: 'rgba(79, 70, 229, 0.4)'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { maxTicksLimit: 15 } },
-          y: { display: false }
-        }
-      }
-    });
-
-    // Update Gradient Arsiran Kurva secara Dinamis
-    function updateChartGradient(zVal, mode) {
-      const chartArea = chart.chartArea;
-      if (!chartArea) return;
-
-      const ctx = chart.ctx;
-      const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-      let stopPos = Math.max(0, Math.min(1, (zVal + 3.5) / 7.0));
-
-      if (mode === 'ppt') {
-        let stopCenter = 0.5;
-        let start = Math.min(stopCenter, stopPos);
-        let end = Math.max(stopCenter, stopPos);
-
-        gradient.addColorStop(0, 'rgba(226, 232, 240, 0.2)');
-        gradient.addColorStop(start, 'rgba(226, 232, 240, 0.2)');
-        gradient.addColorStop(start, 'rgba(79, 70, 229, 0.4)');
-        gradient.addColorStop(end, 'rgba(79, 70, 229, 0.4)');
-        gradient.addColorStop(end, 'rgba(226, 232, 240, 0.2)');
-        gradient.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
-      } else {
-        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
-        gradient.addColorStop(stopPos, 'rgba(79, 70, 229, 0.4)');
-        gradient.addColorStop(stopPos, 'rgba(226, 232, 240, 0.2)');
-        gradient.addColorStop(1, 'rgba(226, 232, 240, 0.2)');
-      }
-
-      chart.data.datasets[0].backgroundColor = gradient;
-      chart.update();
-    }
-
-    // Main Update Function
-    function updateApp() {
-      let z = parseFloat(document.getElementById('zInput').value);
-      if (isNaN(z)) z = 0;
-      z = Math.min(3, Math.max(-3, z));
-      const mode = document.getElementById('modeSelect').value;
-
-      const absZ = Math.abs(z);
-      const meanToZVal = getMeanToZ(absZ);
-      const leftTailVal = getLeftTail(z);
-      const tailVal = 0.5 - meanToZVal;
-
-      let rowVal, colIdx, colStr;
-
-      if (mode === 'ppt') {
-        rowVal = Math.floor(absZ * 10) / 10;
-        colIdx = Math.round((absZ - rowVal) * 100);
-        colStr = cols[colIdx] || '.00';
-
-        document.getElementById('resultLabel').innerText = "Luas dari Garis Tengah (Z=0 ke Z)";
-        document.getElementById('resultText').innerText = `${meanToZVal.toFixed(4)} (${(meanToZVal * 100).toFixed(2)}%)`;
-        
-        document.getElementById('explanation').innerHTML = `
-          <strong>Langkah Perhitungan (Mean-to-Z):</strong><br>
-          1. Nilai Z = <b>${z.toFixed(2)}</b> (diabaikan tanda minusnya) dipecah menjadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
-          2. Nilai dari Tabel (luas dari Z=0 ke Z=${z.toFixed(2)}): <b>${meanToZVal.toFixed(4)}</b> (${(meanToZVal * 100).toFixed(2)}%).<br>
-          3. Sisa area di ujung ekor: <b>0.5 - ${meanToZVal.toFixed(4)} = ${tailVal.toFixed(4)}</b> (${(tailVal * 100).toFixed(2)}%).<br>
-          4. Total area kumulatif dari ujung kiri: <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).
-        `;
-      } else {
-        rowVal = Math.floor(absZ * 10) / 10;
-        if (z < 0 && absZ > 0) rowVal = -rowVal;
-        colIdx = Math.round((absZ - Math.abs(rowVal)) * 100);
-        colStr = cols[colIdx] || '.00';
-
-        document.getElementById('resultLabel').innerText = "Luas Kumulatif (Ujung Kiri ke Z)";
-        document.getElementById('resultText').innerText = `${leftTailVal.toFixed(4)} (${(leftTailVal * 100).toFixed(2)}%)`;
-
-        document.getElementById('explanation').innerHTML = `
-          <strong>Langkah Perhitungan (Left-Tail):</strong><br>
-          1. Nilai Z = <b>${z.toFixed(2)}</b> dipecah menjadi Baris <b>${rowVal.toFixed(1)}</b> dan Kolom <b>${colStr}</b>.<br>
-          2. Nilai Tabel Kumulatif (luas dari ekor kiri paling ujung ke Z=${z.toFixed(2)}): <b>${leftTailVal.toFixed(4)}</b> (${(leftTailVal * 100).toFixed(2)}%).<br>
-          3. Sisa area di sebelah kanan titik Z: <b>1.0 - ${leftTailVal.toFixed(4)} = ${(1 - leftTailVal).toFixed(4)}</b> (${((1 - leftTailVal) * 100).toFixed(2)}%).
-        `;
-      }
-
-      document.getElementById('coordText').innerText = `Baris ${rowVal.toFixed(1)}  |  Kolom ${colStr}`;
-
-      // Highlight cell tabel
-      document.querySelectorAll('.highlight-cell').forEach(e => e.classList.remove('highlight-cell'));
-      const targetCell = document.querySelector(`.cell-${rowVal.toFixed(1)}-${colIdx}`);
-      if (targetCell) {
-        targetCell.classList.add('highlight-cell');
-        targetCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-      }
-
-      // Render ulang gradient kurva
-      updateChartGradient(z, mode);
-    }
-
-    // Event Listeners
-    const zInput = document.getElementById('zInput');
-    const zSlider = document.getElementById('zSlider');
-    const modeSelect = document.getElementById('modeSelect');
-
-    zInput.addEventListener('input', (e) => {
-      zSlider.value = e.target.value;
-      updateApp();
-    });
-
-    zSlider.addEventListener('input', (e) => {
-      zInput.value = e.target.value;
-      updateApp();
-    });
-
-    modeSelect.addEventListener('change', () => {
-      buildTable(modeSelect.value);
-      updateApp();
-    });
-
-    // Inisialisasi awal
-    buildTable('ppt');
-    updateApp();
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
