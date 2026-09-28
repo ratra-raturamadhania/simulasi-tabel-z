@@ -13,16 +13,15 @@
     </header>
 
     <main class="container">
-        <!-- Section Kalkulator Deskriptif -->
+        <!-- Section 1: Kalkulator Deskriptif -->
         <section class="card">
-            <h2>Kalkulator Statistik Deskriptif</h2>
+            <h2>1. Kalkulator Statistik Deskriptif</h2>
             <p>Masukkan sekumpulan angka (pisahkan dengan koma atau spasi):</p>
-            
             <textarea id="dataInput" placeholder="Contoh: 12, 15, 18, 20, 22, 25, 28"></textarea>
-            <button onclick="calculateDescriptive()">Hitung Statistik</button>
+            <button onclick="calculateDescriptive()">Hitung Deskriptif</button>
 
             <div id="result" class="result-box" style="display: none;">
-                <h3>Hasil Perhitungan:</h3>
+                <h3>Hasil Perhitungan Deskriptif:</h3>
                 <ul>
                     <li><strong>Jumlah Data (N):</strong> <span id="outN">-</span></li>
                     <li><strong>Mean (Rata-rata):</strong> <span id="outMean">-</span></li>
@@ -30,6 +29,85 @@
                     <li><strong>Standar Deviasi (Sample):</strong> <span id="outSD">-</span></li>
                     <li><strong>Nilai Minimum:</strong> <span id="outMin">-</span></li>
                     <li><strong>Nilai Maksimum:</strong> <span id="outMax">-</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 2: Kalkulator Z-Score -->
+        <section class="card">
+            <h2>2. Kalkulator Z-Score & Probabilitas Normal</h2>
+            <p>Masukkan nilai Z-score untuk menghitung luas area di bawah kurva normal:</p>
+            <div class="input-group">
+                <label for="zInput">Nilai Z-score:</label>
+                <input type="number" id="zInput" step="0.01" placeholder="Contoh: 1.96">
+            </div>
+            <button onclick="calculateZ()">Hitung Probabilitas</button>
+
+            <div id="zResult" class="result-box" style="display: none;">
+                <h3>Hasil Distribusi Normal:</h3>
+                <ul>
+                    <li><strong>Nilai Z:</strong> <span id="outZ">-</span></li>
+                    <li><strong>Luas Area Kiri P(Z &lt; z):</strong> <span id="outProbLeft">-</span></li>
+                    <li><strong>Luas Area Kanan P(Z &gt; z):</strong> <span id="outProbRight">-</span></li>
+                    <li><strong>Uji 2 Arah (2-tailed p-value):</strong> <span id="outTwoTail">-</span></li>
+                </ul>
+            </div>
+
+            <div class="table-summary">
+                <h4>Tabel Nilai Z Kritis Populer:</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tingkat Kepercayaan (1-α)</th>
+                            <th>Alpha (α)</th>
+                            <th>Nilai Z Kritis (Z<sub>α/2</sub>)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>90%</td><td>0.10</td><td>1.645</td></tr>
+                        <tr><td>95%</td><td>0.05</td><td>1.960</td></tr>
+                        <tr><td>99%</td><td>0.01</td><td>2.576</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 3: Kalkulator Chi-Square (2x2) -->
+        <section class="card">
+            <h2>3. Kalkulator Uji Chi-Square & Odds Ratio (Tabel 2x2)</h2>
+            <p>Masukkan frekuensi observasi ke dalam tabel kontingensi $2 \times 2$:</p>
+            
+            <table class="contingency-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Kategori Kasus / Positif</th>
+                        <th>Kategori Kontrol / Negatif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Kelompok Paparan / Terpapar</strong></td>
+                        <td><input type="number" id="cellA" placeholder="Sel A (misal: 20)"></td>
+                        <td><input type="number" id="cellB" placeholder="Sel B (misal: 10)"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kelompok Non-Paparan</strong></td>
+                        <td><input type="number" id="cellC" placeholder="Sel C (misal: 10)"></td>
+                        <td><input type="number" id="cellD" placeholder="Sel D (misal: 30)"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <button onclick="calculateChiSquare()">Hitung Chi-Square & OR</button>
+
+            <div id="chiResult" class="result-box" style="display: none;">
+                <h3>Hasil Uji Chi-Square & Odds Ratio:</h3>
+                <ul>
+                    <li><strong>Nilai Chi-Square (χ²):</strong> <span id="outChi2">-</span></li>
+                    <li><strong>Degrees of Freedom (df):</strong> 1</li>
+                    <li><strong>Odds Ratio (OR):</strong> <span id="outOR">-</span></li>
+                    <li><strong>Relative Risk (RR):</strong> <span id="outRR">-</span></li>
                 </ul>
             </div>
         </section>
