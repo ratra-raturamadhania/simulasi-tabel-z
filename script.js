@@ -44,14 +44,14 @@ function drawBellCurve(zVal) {
 
     const meanX = width / 2;
     const scaleX = width / 8;
-    const scaleY = height * 0.75;
+    const scaleY = height * 0.7;
     const baselineY = height - 35;
 
     function pdf(x) {
         return (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x);
     }
 
-    // Arsir area kiri nilai Z
+    // Arsir area kiri nilai Z (Area Berwarna / P(Z < z))
     ctx.beginPath();
     ctx.moveTo(0, baselineY);
     for (let xPixel = 0; xPixel <= width; xPixel++) {
@@ -110,6 +110,17 @@ function drawBellCurve(zVal) {
         let tickX = meanX + (i * scaleX);
         ctx.fillText(i, tickX - 3, baselineY + 18);
     }
+
+    // Label Legenda Visual di Atas Canvas
+    ctx.fillStyle = '#27ae60';
+    ctx.fillRect(15, 12, 12, 12);
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillText('Area Kiri P(Z < z) [Arsir]', 32, 22);
+
+    ctx.strokeStyle = '#64748b';
+    ctx.strokeRect(185, 12, 12, 12);
+    ctx.fillText('Area Kanan P(Z > z) [Putih]', 202, 22);
 }
 
 // 4. Generate Tabel Z Positif & Negatif Secara Otomatis
