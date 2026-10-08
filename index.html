@@ -3,44 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biostatistics Hub - Kalkulator Z-Score & Kurva Normal</title>
+    <title>Biostatistics Hub - Kalkulator & Tabel Z-Score</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
+    <header class="hero">
         <h1>Biostatistics Hub</h1>
-        <p>Kalkulator Z-Score & Visualisasi Kurva Distribusi Normal</p>
+        <p>Kalkulator Interaktif, Kurva Distribusi Normal, & Tabel Z Lengkap</p>
     </header>
 
     <main class="container">
+        <!-- Section 1: Kalkulator & Kurva Visual -->
         <section class="card">
             <h2>Kalkulator & Visualisasi Kurva Z-Score</h2>
-            <p>Masukkan nilai Z-score untuk melihat arsir area kurva normal:</p>
+            <p class="subtitle">Masukkan nilai Z-score untuk menghitung probabilitas dan melihat arsir kurva secara otomatis.</p>
 
-            <div class="input-group">
-                <label for="zInput">Nilai Z-score:</label>
-                <input type="number" id="zInput" step="0.01" value="1.96" placeholder="Contoh: 1.96">
+            <div class="calculator-layout">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="zInput">Nilai Z-score:</label>
+                        <input type="number" id="zInput" step="0.01" value="1.96" placeholder="Contoh: 1.96">
+                    </div>
+                    <button onclick="calculateZ()">Hitung & Gambar Kurva</button>
+
+                    <div id="zResult" class="result-box">
+                        <h3>Hasil Perhitungan:</h3>
+                        <ul>
+                            <li><strong>Nilai Z:</strong> <span id="outZ">1.96</span></li>
+                            <li><strong>Luas Area Kiri P(Z &lt; z):</strong> <span id="outProbLeft">-</span></li>
+                            <li><strong>Luas Area Kanan P(Z &gt; z):</strong> <span id="outProbRight">-</span></li>
+                            <li><strong>Uji 2 Arah (2-tailed p-value):</strong> <span id="outTwoTail">-</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="canvas-section">
+                    <canvas id="bellCurve" width="550" height="260"></canvas>
+                </div>
             </div>
-            <button onclick="calculateZ()">Hitung & Gambar Kurva</button>
+        </section>
 
-            <!-- Visualisasi Kurva Lonceng -->
-            <div class="canvas-container">
-                <canvas id="bellCurve" width="600" height="250"></canvas>
-            </div>
-
-            <div id="zResult" class="result-box" style="display: none;">
-                <h3>Hasil Distribusi Normal:</h3>
-                <ul>
-                    <li><strong>Nilai Z:</strong> <span id="outZ">-</span></li>
-                    <li><strong>Luas Area Kiri P(Z &lt; z):</strong> <span id="outProbLeft">-</span></li>
-                    <li><strong>Luas Area Kanan P(Z &gt; z):</strong> <span id="outProbRight">-</span></li>
-                    <li><strong>Uji 2 Arah (2-tailed p-value):</strong> <span id="outTwoTail">-</span></li>
-                </ul>
-            </div>
-
-            <div class="table-summary">
-                <h4>Tabel Ringkasan Nilai Z Kritis:</h4>
-                <table>
+        <!-- Section 2: Ringkasan Nilai Kritis -->
+        <section class="card">
+            <h2>Ringkasan Nilai Z Kritis Populer</h2>
+            <p class="subtitle">Nilai Z yang sering digunakan dalam tingkat kepercayaan (Confidence Interval) riset kesehatan.</p>
+            <div class="table-responsive">
+                <table class="styled-table center-table">
                     <thead>
                         <tr>
                             <th>Tingkat Kepercayaan (1-α)</th>
@@ -49,14 +57,43 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>90%</td><td>0.10</td><td>1.645</td></tr>
-                        <tr><td>95%</td><td>0.05</td><td>1.960</td></tr>
-                        <tr><td>99%</td><td>0.01</td><td>2.576</td></tr>
+                        <tr><td>90%</td><td>0.10</td><td><strong>1.645</strong></td></tr>
+                        <tr><td>95%</td><td>0.05</td><td><strong>1.960</strong></td></tr>
+                        <tr><td>99%</td><td>0.01</td><td><strong>2.576</strong></td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
+
+        <!-- Section 3: Tabel Z Lengkap (Positif & Negatif) -->
+        <section class="card">
+            <h2>Tabel Distribusi Normal Standar (Tabel Z Lengkap)</h2>
+            <p class="subtitle">Luas area di bawah kurva dari $-\infty$ hingga $Z$ ($P(Z < z)$).</p>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTable('positive')">Nilai Z Positif (0.0 hingga 3.4)</button>
+                <button class="tab-btn" onclick="switchTable('negative')">Nilai Z Negatif (-3.4 hingga 0.0)</button>
+            </div>
+
+            <!-- Tabel Z Positif -->
+            <div id="posTableWrapper" class="table-responsive">
+                <table class="styled-table z-matrix-table" id="posZTable">
+                    <!-- Ditgenerate via JS -->
+                </table>
+            </div>
+
+            <!-- Tabel Z Negatif -->
+            <div id="negTableWrapper" class="table-responsive" style="display: none;">
+                <table class="styled-table z-matrix-table" id="negZTable">
+                    <!-- Ditgenerate via JS -->
+                </table>
+            </div>
+        </section>
     </main>
+
+    <footer>
+        <p>&copy; 2026 Biostatistics Hub. Built with JavaScript & HTML5 Canvas.</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
