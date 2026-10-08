@@ -158,7 +158,7 @@ function showQuiz(num) {
         </div>
     `;
 
-    // Panggil MathJax untuk merender ulang rumus bertingkat
+    // Trigger MathJax untuk memproses simbol di HTML
     if (window.MathJax) {
         MathJax.typesetPromise();
     }
@@ -186,7 +186,6 @@ function checkAnswer(num) {
     
     solutionBox.style.display = 'block';
 
-    // Render ulang MathJax saat pembahasan terbuka
     if (window.MathJax) {
         MathJax.typesetPromise();
     }
