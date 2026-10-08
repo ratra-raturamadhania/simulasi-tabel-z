@@ -6,8 +6,8 @@ const quizData = {
         solution: `
             <h4>Pembahasan & Langkah Pengerjaan:</h4>
             <ul>
-                <li><strong>Diketahui:</strong> $\\mu = 12$, $\\sigma = 4$, $n = 9$, $X = 10$</li>
-                <li><strong>1. Hitung Standar Error ($SE$):</strong><br>
+                <li><strong>Diketahui:</strong> &mu; = 12, &sigma; = 4, n = 9, X = 10</li>
+                <li><strong>1. Hitung Standar Error (SE):</strong><br>
                     $$SE = \\frac{\\sigma}{\\sqrt{n}} = \\frac{4}{\\sqrt{9}} = \\frac{4}{3} = 1{,}33$$
                 </li>
                 <li><strong>2. Hitung Nilai Z:</strong><br>
@@ -27,11 +27,11 @@ const quizData = {
         solution: `
             <h4>Pembahasan & Langkah Pengerjaan:</h4>
             <ul>
-                <li><strong>Diketahui:</strong> $\\mu = 2$ buku, $\\sigma = 1$ buku</li>
-                <li><strong>Rumus Z:</strong> $Z = \\frac{X - \\mu}{\\sigma}$</li>
-                <li>Untuk $X = 0 \\rightarrow Z_1 = \\frac{0 - 2}{1} = -2$</li>
-                <li>Untuk $X = 1 \\rightarrow Z_2 = \\frac{1 - 2}{1} = -1$</li>
-                <li><strong>Hitung Luas Area Antara $Z_1$ dan $Z_2$:</strong><br>
+                <li><strong>Diketahui:</strong> &mu; = 2 buku, &sigma; = 1 buku</li>
+                <li><strong>Rumus Z:</strong> Z = (X - &mu;) / &sigma;</li>
+                <li>Untuk X = 0 &rarr; Z1 = (0 - 2) / 1 = -2</li>
+                <li>Untuk X = 1 &rarr; Z2 = (1 - 2) / 1 = -1</li>
+                <li><strong>Hitung Luas Area Antara Z1 dan Z2:</strong><br>
                     $$P(0 \\le X \\le 1) = P(-2 \\le Z \\le -1)$$
                     $$P(-2 \\le Z \\le -1) = 0{,}4772 - 0{,}3413 = 0{,}1359$$
                 </li>
@@ -46,25 +46,25 @@ const quizData = {
         solution: `
             <h4>Pembahasan & Langkah Pengerjaan:</h4>
             <ul>
-                <li><strong>Diketahui:</strong> $p = 0{,}015\\% = 0{,}00015$, $n = 50.000$</li>
-                <li><strong>Rata-rata kejadian ($\\lambda$):</strong><br>
+                <li><strong>Diketahui:</strong> p = 0,015% = 0,00015, n = 50.000</li>
+                <li><strong>Rata-rata kejadian (&lambda;):</strong><br>
                     $$\\lambda = n \\times p = 50.000 \\times 0{,}00015 = 7{,}5$$
                 </li>
                 <li><strong>Rumus Poisson:</strong><br>
                     $$P(X = x) = \\frac{e^{-\\lambda} \\cdot \\lambda^x}{x!}$$
                 </li>
-                <li><strong>a. Tidak ada kasus $P(X = 0)$:</strong><br>
+                <li><strong>a. Tidak ada kasus P(X = 0):</strong><br>
                     $$P(X = 0) = \\frac{e^{-7{,}5} \\cdot 7{,}5^0}{0!} = 0{,}000553$$
                 </li>
-                <li><strong>b. Ada kasus antara 1–2 $P(1 \\le X \\le 2)$:</strong><br>
+                <li><strong>b. Ada kasus antara 1–2 P(1 &le; X &le; 2):</strong><br>
                     $$P(1 \\le X \\le 2) = P(X=1) + P(X=2)$$
                     $$P(1 \\le X \\le 2) = 0{,}004148 + 0{,}015555 = 0{,}019704$$
                 </li>
-                <li><strong>c. Paling banyak 2 kasus $P(X \\le 2)$:</strong><br>
+                <li><strong>c. Paling banyak 2 kasus P(X &le; 2):</strong><br>
                     $$P(X \\le 2) = P(0) + P(1) + P(2)$$
                     $$P(X \\le 2) = 0{,}000553 + 0{,}004148 + 0{,}015555 = 0{,}020257$$
                 </li>
-                <li><strong>d. Minimal 2 kasus $P(X \\ge 2)$:</strong><br>
+                <li><strong>d. Minimal 2 kasus P(X &ge; 2):</strong><br>
                     $$P(X \\ge 2) = 1 - P(X < 2) = 1 - [P(0) + P(1)]$$
                     $$P(X \\ge 2) = 1 - (0{,}000553 + 0{,}004148) = 0{,}995299$$
                 </li>
@@ -78,11 +78,11 @@ const quizData = {
         solution: `
             <h4>Pembahasan & Langkah Pengerjaan:</h4>
             <ul>
-                <li><strong>Diketahui:</strong> $n = 10$, $p = 0{,}2$, $q = 1 - p = 0{,}8$</li>
+                <li><strong>Diketahui:</strong> n = 10, p = 0,2, q = 1 - p = 0,8</li>
                 <li><strong>Rumus Binomial:</strong><br>
                     $$P(X = x) = \\binom{n}{x} \\cdot p^x \\cdot q^{n-x} = \\frac{n!}{x!(n-x)!} \\cdot p^x \\cdot q^{n-x}$$
                 </li>
-                <li><strong>Paling Banyak 2 Siswa $P(X \\le 2)$:</strong><br>
+                <li><strong>Paling Banyak 2 Siswa P(X &le; 2):</strong><br>
                     $$P(X \\le 2) = P(0) + P(1) + P(2) = 0{,}6778$$
                 </li>
                 <li><strong>Hasil Akhir:</strong> <strong>0,6778 (67,78%)</strong></li>
@@ -96,7 +96,7 @@ const quizData = {
         solution: `
             <h4>Pembahasan & Langkah Pengerjaan:</h4>
             <ul>
-                <li><strong>Diketahui dari tabel:</strong> Jumlah Perempuan & Memiliki Gejala = $35$, Total Sampel ($N$) = $250$</li>
+                <li><strong>Diketahui dari tabel:</strong> Jumlah Perempuan & Memiliki Gejala = 35, Total Sampel (N) = 250</li>
                 <li><strong>Rumus Peluang:</strong><br>
                     $$P(A) = \\frac{\\text{Jumlah Kejadian}}{\\text{Jumlah Seluruh Kejadian}}$$
                 </li>
@@ -114,16 +114,16 @@ const quizData = {
         solution: `
             <h4>Pembahasan & Rumus Letak Kuartil:</h4>
             <ul>
-                <li><strong>a. Nilai Maksimum (A):</strong> $98$</li>
-                <li><strong>b. Kuartil 3 / $Q_3$ (B):</strong><br>
+                <li><strong>a. Nilai Maksimum (A):</strong> 98</li>
+                <li><strong>b. Kuartil 3 / Q3 (B):</strong><br>
                     $$\\text{Posisi } Q_3 = \\frac{3}{4}(n + 1) = \\frac{3}{4}(11 + 1) = 9 \\rightarrow \\text{Data ke-9} = 90$$
                 </li>
-                <li><strong>c. Median / $Q_2$ (C):</strong> $78$</li>
-                <li><strong>d. Kuartil 1 / $Q_1$ (D):</strong><br>
+                <li><strong>c. Median / Q2 (C):</strong> 78</li>
+                <li><strong>d. Kuartil 1 / Q1 (D):</strong><br>
                     $$\\text{Posisi } Q_1 = \\frac{1}{4}(n + 1) = \\frac{1}{4}(11 + 1) = 3 \\rightarrow \\text{Data ke-3} = 60$$
                 </li>
-                <li><strong>e. Nilai Minimum Non-Outlier (E):</strong> $55$</li>
-                <li><strong>f. Outlier / Pencilan (F):</strong> $10$</li>
+                <li><strong>e. Nilai Minimum Non-Outlier (E):</strong> 55</li>
+                <li><strong>f. Outlier / Pencilan (F):</strong> 10</li>
             </ul>
         `
     }
@@ -158,7 +158,6 @@ function showQuiz(num) {
         </div>
     `;
 
-    // Trigger MathJax untuk memproses simbol di HTML
     if (window.MathJax) {
         MathJax.typesetPromise();
     }
