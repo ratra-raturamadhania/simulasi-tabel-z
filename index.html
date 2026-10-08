@@ -3,45 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biostatistics Hub & Calculator</title>
+    <title>Biostatistics Hub - Kalkulator Z-Score & Kurva Normal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <h1>Biostatistics Hub</h1>
-        <p>Platform Edukasi & Kalkulator Biostatistik Interaktif</p>
+        <p>Kalkulator Z-Score & Visualisasi Kurva Distribusi Normal</p>
     </header>
 
     <main class="container">
-        <!-- Section 1: Kalkulator Deskriptif -->
         <section class="card">
-            <h2>Kalkulator Statistik Deskriptif</h2>
-            <p>Masukkan sekumpulan angka (pisahkan dengan koma atau spasi):</p>
-            <textarea id="dataInput" placeholder="Contoh: 12, 15, 18, 20, 22, 25, 28"></textarea>
-            <button onclick="calculateDescriptive()">Hitung Deskriptif</button>
+            <h2>Kalkulator & Visualisasi Kurva Z-Score</h2>
+            <p>Masukkan nilai Z-score untuk melihat arsir area kurva normal:</p>
 
-            <div id="result" class="result-box" style="display: none;">
-                <h3>Hasil Perhitungan Deskriptif:</h3>
-                <ul>
-                    <li><strong>Jumlah Data (N):</strong> <span id="outN">-</span></li>
-                    <li><strong>Mean (Rata-rata):</strong> <span id="outMean">-</span></li>
-                    <li><strong>Median:</strong> <span id="outMedian">-</span></li>
-                    <li><strong>Standar Deviasi (Sample):</strong> <span id="outSD">-</span></li>
-                    <li><strong>Nilai Minimum:</strong> <span id="outMin">-</span></li>
-                    <li><strong>Nilai Maksimum:</strong> <span id="outMax">-</span></li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Section 2: Kalkulator & Tabel Z-Score -->
-        <section class="card">
-            <h2>Kalkulator Z-Score & Probabilitas Normal</h2>
-            <p>Masukkan nilai Z-score untuk menghitung luas area di bawah kurva normal standar:</p>
             <div class="input-group">
                 <label for="zInput">Nilai Z-score:</label>
-                <input type="number" id="zInput" step="0.01" placeholder="Contoh: 1.96">
+                <input type="number" id="zInput" step="0.01" value="1.96" placeholder="Contoh: 1.96">
             </div>
-            <button onclick="calculateZ()">Hitung Probabilitas</button>
+            <button onclick="calculateZ()">Hitung & Gambar Kurva</button>
+
+            <!-- Visualisasi Kurva Lonceng -->
+            <div class="canvas-container">
+                <canvas id="bellCurve" width="600" height="250"></canvas>
+            </div>
 
             <div id="zResult" class="result-box" style="display: none;">
                 <h3>Hasil Distribusi Normal:</h3>
