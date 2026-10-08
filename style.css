@@ -7,6 +7,8 @@
     --text-color: #333333;
     --text-muted: #666666;
     --border-color: #e0e0e0;
+    --info-bg: #f8fafc;
+    --info-border: #3b82f6;
 }
 
 * {
@@ -66,7 +68,36 @@ h2 {
 .subtitle {
     color: var(--text-muted);
     font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+}
+
+/* Info Box & Curve Legend Styling */
+.curve-legend {
+    background-color: #f0fdf4;
+    border-left: 4px solid var(--secondary-color);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
     margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.info-box {
+    background-color: var(--info-bg);
+    border-left: 4px solid var(--info-border);
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.2rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.info-box code {
+    background-color: #e2e8f0;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.85rem;
 }
 
 /* Layout Kalkulator */
@@ -194,6 +225,15 @@ canvas {
     position: sticky;
     top: 0;
     z-index: 2;
+}
+
+/* Sticky First Column pada Tabel Z */
+.z-matrix-table td:first-child,
+.z-matrix-table th:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #f1f5f9;
+    z-index: 3;
 }
 
 .styled-table tbody tr:nth-child(even) {
