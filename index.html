@@ -18,6 +18,15 @@
             <h2>Kalkulator & Visualisasi Kurva Z-Score</h2>
             <p class="subtitle">Masukkan nilai Z-score untuk menghitung probabilitas dan melihat arsir kurva secara otomatis.</p>
 
+            <!-- Keterangan Legenda Area Kurva -->
+            <div class="curve-legend" style="background: #f8f9fa; padding: 12px 16px; border-left: 4px solid #007bff; margin-bottom: 20px; border-radius: 4px;">
+                <p style="margin: 0; font-size: 0.95rem; color: #333;">
+                    <strong>💡 Cara Membaca Kurva:</strong> 
+                    <span style="color: #007bff;">■ Area Berwarna</span> melambangkan <strong>Area Kiri $P(Z < z)$</strong> (Nilai pada Tabel Z). 
+                    <span style="color: #6c757d;">□ Area Putih</span> melambangkan <strong>Area Kanan $P(Z > z)$</strong> dengan nilai $1 - P(Z < z)$.
+                </p>
+            </div>
+
             <div class="calculator-layout">
                 <div class="input-section">
                     <div class="input-group">
@@ -30,8 +39,8 @@
                         <h3>Hasil Perhitungan:</h3>
                         <ul>
                             <li><strong>Nilai Z:</strong> <span id="outZ">1.96</span></li>
-                            <li><strong>Luas Area Kiri P(Z &lt; z):</strong> <span id="outProbLeft">-</span></li>
-                            <li><strong>Luas Area Kanan P(Z &gt; z):</strong> <span id="outProbRight">-</span></li>
+                            <li><strong>Luas Area Kiri P(Z &lt; z) (Arsir):</strong> <span id="outProbLeft">-</span></li>
+                            <li><strong>Luas Area Kanan P(Z &gt; z) (Putih):</strong> <span id="outProbRight">-</span></li>
                             <li><strong>Uji 2 Arah (2-tailed p-value):</strong> <span id="outTwoTail">-</span></li>
                         </ul>
                     </div>
@@ -67,8 +76,13 @@
 
         <!-- Section 3: Tabel Z Lengkap (Positif & Negatif) -->
         <section class="card">
-            <h2>Tabel Distribusi Normal Standar (Tabel Z Lengkap)</h2>
-            <p class="subtitle">Luas area di bawah kurva dari -&infin; hingga Z (P(Z &lt; z)).</p>
+            <h2>Tabel Distribusi Normal Standar (Tabel Z Kumulatif)</h2>
+            <p class="subtitle">Menampilkan luas area kumulatif di bawah kurva dari -&infin; hingga Z ($P(Z < z)$).</p>
+
+            <!-- Box Penjelasan Format Tabel Z -->
+            <div class="info-box" style="background: #e9ecef; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">
+                <strong>Catatan Format Tabel:</strong> Angka dalam tabel ini adalah <strong>Area Kiri Kumulatif</strong>. Jika Anda membutuhkan luas <strong>Area Putih (Ekor Kanan)</strong>, pengurangannya adalah <code>1 - Nilai Tabel</code>.
+            </div>
 
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="switchTable('positive')">Nilai Z Positif (0.0 hingga 3.4)</button>
@@ -78,14 +92,14 @@
             <!-- Tabel Z Positif -->
             <div id="posTableWrapper" class="table-responsive">
                 <table class="styled-table z-matrix-table" id="posZTable">
-                    <!-- Ditgenerate via JS -->
+                    <!-- Digenerate via JS -->
                 </table>
             </div>
 
             <!-- Tabel Z Negatif -->
             <div id="negTableWrapper" class="table-responsive" style="display: none;">
                 <table class="styled-table z-matrix-table" id="negZTable">
-                    <!-- Ditgenerate via JS -->
+                    <!-- Digenerate via JS -->
                 </table>
             </div>
         </section>
