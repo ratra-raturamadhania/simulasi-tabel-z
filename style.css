@@ -29,7 +29,6 @@ header {
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
 }
 
 h2 {
@@ -37,21 +36,22 @@ h2 {
     margin-bottom: 0.5rem;
 }
 
-textarea, input[type="number"] {
+.input-group {
+    margin: 1rem 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+input[type="number"] {
     width: 100%;
     padding: 0.8rem;
-    margin: 0.5rem 0 1rem 0;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-textarea {
-    height: 100px;
-    resize: vertical;
-}
-
-.input-group {
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
 }
 
 button {
@@ -63,10 +63,24 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s;
+    width: 100%;
 }
 
 button:hover {
     background-color: #219150;
+}
+
+.canvas-container {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+canvas {
+    max-width: 100%;
+    height: auto;
+    background-color: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
 }
 
 .result-box {
@@ -86,22 +100,23 @@ button:hover {
     margin-bottom: 0.5rem;
 }
 
+.table-summary {
+    margin-top: 2rem;
+}
+
 .table-summary table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
+    margin-top: 0.8rem;
 }
 
 .table-summary th, .table-summary td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
     text-align: center;
 }
 
 .table-summary th {
     background-color: #f2f2f2;
-}
-
-.table-summary {
-    margin-top: 1.5rem;
+    color: #2c3e50;
 }
