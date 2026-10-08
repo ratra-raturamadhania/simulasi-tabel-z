@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biostatistics Hub - Latihan Soal UTS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="hero">
+        <h1>Biostatistics Hub</h1>
+        <p>Latihan Soal Interaktif & Pembahasan Resmi UTS Biostatistik Dasar</p>
+    </header>
+
+    <!-- Navigasi Halaman -->
+    <nav style="text-align: center; margin-top: 1.5rem;">
+        <a href="index.html" class="tab-btn" style="text-decoration: none; display: inline-block;">🏠 Kalkulator & Tabel Z</a>
+        <a href="uts.html" class="tab-btn active" style="text-decoration: none; display: inline-block;">📝 Latihan Soal UTS</a>
+    </nav>
+
+    <main class="container" style="margin-top: 2rem;">
+        <section class="card">
+            <h2>Modul Latihan Soal UTS</h2>
+            <p class="subtitle">Pilih nomor soal, ketik jawaban kamu, lalu cek pembahasan resminya.</p>
+
+            <!-- Menu Tab Soal -->
+            <div class="tab-buttons" style="flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <button class="tab-btn active" onclick="showQuiz(1)">Soal 1 (Z-Hb)</button>
+                <button class="tab-btn" onclick="showQuiz(2)">Soal 2 (Z-Buku)</button>
+                <button class="tab-btn" onclick="showQuiz(3)">Soal 3 (Poisson)</button>
+                <button class="tab-btn" onclick="showQuiz(4)">Soal 4 (Binomial)</button>
+                <button class="tab-btn" onclick="showQuiz(5)">Soal 5 (Peluang Tabel)</button>
+                <button class="tab-btn" onclick="showQuiz(6)">Soal 6 (Boxplot)</button>
+            </div>
+
+            <!-- Area Soal & Pembahasan -->
+            <div id="quizContainer" class="info-box" style="background: #ffffff; border: 1px solid var(--border-color); padding: 1.5rem;">
+                <!-- Digerakkan via uts.js -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Biostatistics Hub. Built with JavaScript & HTML5 Canvas.</p>
+    </footer>
+
+    <script src="uts.js"></script>
+</body>
+</html>
